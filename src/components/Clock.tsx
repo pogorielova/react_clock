@@ -1,11 +1,5 @@
 import React from 'react';
 
-function getRandomName(): string {
-  const value = Date.now().toString().slice(-4);
-
-  return `Clock-${value}`;
-}
-
 type Props = {
   name: string;
 };
@@ -16,8 +10,6 @@ type State = {
 };
 
 export class Clock extends React.PureComponent<Props, State> {
-  private nameTimerId: number | undefined;
-
   private clockTimerId: number | undefined;
 
   state: State = {
@@ -26,12 +18,6 @@ export class Clock extends React.PureComponent<Props, State> {
   };
 
   componentDidMount(): void {
-    this.nameTimerId = window.setInterval(() => {
-      this.setState({
-        name: getRandomName(),
-      });
-    }, 3300);
-
     this.clockTimerId = window.setInterval(() => {
       const currentTime = new Date();
 
@@ -45,6 +31,10 @@ export class Clock extends React.PureComponent<Props, State> {
     prevProps: Readonly<Props>,
     prevState: Readonly<State>,
   ): void {
+    if (prevProps.name !== this.props.name) {
+      this.setState({ name: this.props.name });
+    }
+
     if (prevState.name !== this.state.name) {
       // eslint-disable-next-line no-console
       console.warn(`Renamed from ${prevState.name} to ${this.state.name}`);
@@ -52,7 +42,6 @@ export class Clock extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount(): void {
-    window.clearInterval(this.nameTimerId);
     window.clearInterval(this.clockTimerId);
   }
 
